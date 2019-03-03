@@ -1,0 +1,11 @@
+{
+  "name": "tesla-app",
+  "version": "0.0.1",
+  "description": "Node script to start the climate on your Tesla",
+  "author": "Justin Berstler",
+  "license": "ISC",
+  "dependencies": {
+    "simple-node-logger": "^18.12.22",
+    "teslajs": "^4.2.6"
+  }
+}

@@ -1,6 +1,5 @@
-// TODO rename private functions to _name
 // minimum battery level (as a percent) required to start the climate
-// this prevents us from firing up the climate on a low battery
+// this prevents us from doing things on a low battery
 const MIN_BATTERY_LEVEL = 20;
 const DEBUG_MODE = false;
 
@@ -55,7 +54,7 @@ function loginToVehicle() {
         });
 }
 
-function checkAllConditions(vehicle, ...conditions) {
+function _checkAllConditions(vehicle, ...conditions) {
     logger.debug("Fetching vehicle data");
     return tjs.vehicleDataAsync(vehicle)
         .then(vehicleData => {
@@ -68,7 +67,7 @@ function checkAllConditions(vehicle, ...conditions) {
         });
 }
 
-function userPresentCondition(userPresent) {
+function _userPresentCondition(userPresent) {
     let assertUserPresence = function(vehicleData) {
         if (userPresent != vehicleData.vehicle_state.is_user_present) {
             let message = `User is present: ${vehicleData.vehicle_state.is_user_present} Bailing out!`;
@@ -82,7 +81,7 @@ function userPresentCondition(userPresent) {
     return assertUserPresence;
 }
 
-function batteryMinimumCondition(minBatteryLevel) {
+function _batteryMinimumCondition(minBatteryLevel) {
     let assertBatteryLevel = function(vehicleData) {
         if (minBatteryLevel && vehicleData.charge_state.battery_level < minBatteryLevel) {
             let message = `Battery level ${vehicleData.charge_state.battery_level}% is below minimum required ${minBatteryLevel}%. Bailing out!`;
@@ -97,10 +96,12 @@ function batteryMinimumCondition(minBatteryLevel) {
 }
 
 function startSentryMode(vehicle) {
-    return attemptToWakeUpTheCar(vehicle)
+    return _attemptToWakeUpTheCar(vehicle)
         .then(() => {
             logger.debug("Checking required conditions");
-            return checkAllConditions(vehicle, batteryMinimumCondition(MIN_BATTERY_LEVEL), userPresentCondition(false));
+            return _checkAllConditions(vehicle,
+                _batteryMinimumCondition(MIN_BATTERY_LEVEL),
+                _userPresentCondition(false));
         })
         .then(() => {
             logger.debug('Starting sentry mode');
@@ -120,12 +121,12 @@ function startSentryMode(vehicle) {
 function controlClimate(vehicle, start) {
     let requiredMinBatteryLevel = start ? MIN_BATTERY_LEVEL : null;
 
-    return attemptToWakeUpTheCar(vehicle)
+    return _attemptToWakeUpTheCar(vehicle)
         .then(() => {
             logger.debug("Checking required conditions");
-            return checkAllConditions(vehicle,
-                batteryMinimumCondition(requiredMinBatteryLevel),
-                userPresentCondition(false));
+            return _checkAllConditions(vehicle,
+                _batteryMinimumCondition(requiredMinBatteryLevel),
+                _userPresentCondition(false));
         })
         .then(() => {
             if (start) {
@@ -152,7 +153,7 @@ function controlClimate(vehicle, start) {
 // when attempting to turn the climate on/off.
 // If anyone has any good ideas on how to make this retry loop more readable
 // (not more clever or concise) I'd be interested to hear it.
-function attemptToWakeUpTheCar(vehicle) {
+function _attemptToWakeUpTheCar(vehicle) {
     let interval_seconds = 15;
 
     let attempt = 1;

@@ -69,7 +69,7 @@ function checkAllConditions(vehicle, ...conditions) {
 }
 
 function userPresentCondition(userPresent) {
-    let isUserNotPresent = function(vehicleData) {
+    let assertUserPresence = function(vehicleData) {
         if (userPresent != vehicleData.vehicle_state.is_user_present) {
             let message = `User is present: ${vehicleData.vehicle_state.is_user_present} Bailing out!`;
             logger.warn(message);
@@ -79,11 +79,11 @@ function userPresentCondition(userPresent) {
         }
     };
 
-    return isUserNotPresent;
+    return assertUserPresence;
 }
 
 function batteryMinimumCondition(minBatteryLevel) {
-    let checkBatteryLevel = function(vehicleData) {
+    let assertBatteryLevel = function(vehicleData) {
         if (minBatteryLevel && vehicleData.charge_state.battery_level < minBatteryLevel) {
             let message = `Battery level ${vehicleData.charge_state.battery_level}% is below minimum required ${minBatteryLevel}%. Bailing out!`;
             logger.warn(message);
@@ -93,7 +93,7 @@ function batteryMinimumCondition(minBatteryLevel) {
         }
     };
 
-    return checkBatteryLevel;
+    return assertBatteryLevel;
 }
 
 function startSentryMode(vehicle) {

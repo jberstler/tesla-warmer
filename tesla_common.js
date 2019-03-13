@@ -1,7 +1,12 @@
+/**** START USER CONFIG VARIABLES ****/
 // minimum battery level (as a percent) required to start the climate
 // this prevents us from doing things on a low battery
 const MIN_BATTERY_LEVEL = 20;
 const DEBUG_MODE = false;
+
+var logfile; // set this if you want to log output to a file e.g. '/Users/starman/start_climate.log'
+/**** END USER CONFIG VARIABLES ****/
+
 
 const tjs = require('teslajs');
 

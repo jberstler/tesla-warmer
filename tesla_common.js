@@ -5,6 +5,7 @@ const MIN_BATTERY_LEVEL = 20;
 const DEBUG_MODE = false;
 
 var logfile; // set this if you want to log output to a file e.g. '/Users/starman/start_climate.log'
+var loglevel = 'debug'; // one of 'fatal' 'error' 'warn' 'debug' or 'trace'
 /**** END USER CONFIG VARIABLES ****/
 
 

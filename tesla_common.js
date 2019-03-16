@@ -1,4 +1,8 @@
 /**** START USER CONFIG VARIABLES ****/
+// the credentials you use to log in to tesla.com
+const username = "TESLA_USERNAME";
+const password = "TESLA_PASSWORD";
+
 // minimum battery level (as a percent) required to start the climate
 // this prevents us from doing things on a low battery
 const MIN_BATTERY_LEVEL = 20;
@@ -10,9 +14,6 @@ var loglevel = 'debug'; // one of 'fatal' 'error' 'warn' 'debug' or 'trace'
 
 
 const tjs = require('teslajs');
-
-const username = "TESLA_USERNAME";
-const password = "TESLA_PASSWORD";
 
 // singleton logger instance created with a self-executing function
 var logger = (function() {

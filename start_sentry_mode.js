@@ -5,7 +5,7 @@ var vehicle;
 return teslaCommon.loginToVehicle()
     .then((authenticatedVehicle) => {
         vehicle = authenticatedVehicle;
-        return teslaCommon.startSentryMode(vehicle);
+        return teslaCommon.controlSentryMode(vehicle, true);
     })
     .catch(err => {
         teslaCommon.logger.error(err);

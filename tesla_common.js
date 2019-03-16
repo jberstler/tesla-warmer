@@ -101,7 +101,7 @@ function _batteryMinimumCondition(minBatteryLevel) {
     return assertBatteryLevel;
 }
 
-function startSentryMode(vehicle) {
+function controlSentryMode(vehicle, start) {
     return _attemptToWakeUpTheCar(vehicle)
         .then(() => {
             logger.debug("Checking required conditions");
@@ -114,7 +114,7 @@ function startSentryMode(vehicle) {
             if (DEBUG_MODE) {
                 return tjs.flashLightsAsync(vehicle);
             } else {
-                return tjs.startSentryModeAsync(vehicle);
+                return tjs.setSentryModeAsync(vehicle, start);
             }
         });
 }
@@ -210,5 +210,5 @@ module.exports = {
     controlClimate: controlClimate,
     loginToVehicle: loginToVehicle,
     logger: logger,
-    startSentryMode: startSentryMode,
+    controlSentryMode: controlSentryMode,
 };

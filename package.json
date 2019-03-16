@@ -6,6 +6,6 @@
   "license": "ISC",
   "dependencies": {
     "simple-node-logger": "^18.12.22",
-    "teslajs": "^4.2.6"
+    "teslajs": "4.3.3"
   }
 }

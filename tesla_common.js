@@ -3,8 +3,8 @@
 const username = "TESLA_USERNAME";
 const password = "TESLA_PASSWORD";
 
-// minimum battery level (as a percent) required to start the climate
-// this prevents us from doing things on a low battery
+// minimum battery level (as a percent) required to turn on power hungry functions
+// such as climate or Sentry Mode
 const MIN_BATTERY_LEVEL = 20;
 const DEBUG_MODE = false;
 
@@ -29,6 +29,11 @@ var logger = (function() {
     });
 })();
 
+/*
+ * Use Tesla credentials to obtain an auth key. Return a configuration object
+ * containing the authKey property (suitable for passing as an "options" argument
+ * to teslajs functions).
+ */
 function loginToVehicle() {
     let options;
 
@@ -57,47 +62,10 @@ function loginToVehicle() {
         });
 }
 
-function _checkAllConditions(vehicle, ...conditions) {
-    logger.debug("Fetching vehicle data");
-    return tjs.vehicleDataAsync(vehicle)
-        .then(vehicleData => {
-            for (var i = 0; i < conditions.length; i++) {
-                let condition = conditions[i];
-                // TODO at the moment, conditions just throw when they are not met
-                // that's a little weird, no?
-                condition(vehicleData);
-            }
-        });
-}
-
-function _userPresentCondition(userPresent) {
-    let assertUserPresence = function(vehicleData) {
-        if (userPresent != vehicleData.vehicle_state.is_user_present) {
-            let message = `User is present: ${vehicleData.vehicle_state.is_user_present} Bailing out!`;
-            logger.warn(message);
-            throw message;
-        } else {
-            logger.debug(`User is present: ${vehicleData.vehicle_state.is_user_present} Proceeding.`);
-        }
-    };
-
-    return assertUserPresence;
-}
-
-function _batteryMinimumCondition(minBatteryLevel) {
-    let assertBatteryLevel = function(vehicleData) {
-        if (minBatteryLevel && vehicleData.charge_state.battery_level < minBatteryLevel) {
-            let message = `Battery level ${vehicleData.charge_state.battery_level}% is below minimum required ${minBatteryLevel}%. Bailing out!`;
-            logger.warn(message);
-            throw message;
-        } else {
-            logger.debug(`Battery is at ${vehicleData.charge_state.battery_level}%. Proceeding.`);
-        }
-    };
-
-    return assertBatteryLevel;
-}
-
+/*
+ * Turns Sentry Mode either on or off. Only does so if the battery is at the
+ * minimum level and the user is not present.
+ */
 function controlSentryMode(vehicle, start) {
     return _attemptToWakeUpTheCar(vehicle)
         .then(() => {
@@ -152,10 +120,53 @@ function controlClimate(vehicle, start) {
         });
 }
 
+// private functions below
+
+function _checkAllConditions(vehicle, ...conditions) {
+    logger.debug("Fetching vehicle data");
+    return tjs.vehicleDataAsync(vehicle)
+        .then(vehicleData => {
+            for (var i = 0; i < conditions.length; i++) {
+                let condition = conditions[i];
+                // TODO at the moment, conditions just throw when they are not met
+                // that's a little weird, no?
+                condition(vehicleData);
+            }
+        });
+}
+
+function _userPresentCondition(userPresent) {
+    let assertUserPresence = function(vehicleData) {
+        if (userPresent != vehicleData.vehicle_state.is_user_present) {
+            let message = `User is present: ${vehicleData.vehicle_state.is_user_present} Bailing out!`;
+            logger.warn(message);
+            throw message;
+        } else {
+            logger.debug(`User is present: ${vehicleData.vehicle_state.is_user_present} Proceeding.`);
+        }
+    };
+
+    return assertUserPresence;
+}
+
+function _batteryMinimumCondition(minBatteryLevel) {
+    let assertBatteryLevel = function(vehicleData) {
+        if (minBatteryLevel && vehicleData.charge_state.battery_level < minBatteryLevel) {
+            let message = `Battery level ${vehicleData.charge_state.battery_level}% is below minimum required ${minBatteryLevel}%. Bailing out!`;
+            logger.warn(message);
+            throw message;
+        } else {
+            logger.debug(`Battery is at ${vehicleData.charge_state.battery_level}%. Proceeding.`);
+        }
+    };
+
+    return assertBatteryLevel;
+}
+
 // if you don't try to wake up the car first, you'll probably get a 408 response
-// when attempting to turn the climate on/off.
+// when attempting to do something with the car.
 // If anyone has any good ideas on how to make this retry loop more readable
-// (not more clever or concise) I'd be interested to hear it.
+// (no, not more clever or concise) I'd be interested to hear it.
 function _attemptToWakeUpTheCar(vehicle) {
     let interval_seconds = 15;
 

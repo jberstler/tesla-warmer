@@ -17,20 +17,16 @@ const tjs = require('teslajs');
 
 // singleton logger instance created with a self-executing function
 var logger = (function() {
-    if (!logger) {
-        if (DEBUG_MODE) {
-            logfile = undefined;
-            loglevel = 'debug';
-        }
-
-        logger = require('simple-node-logger').createSimpleLogger({
-            logFilePath: logfile,
-            level: loglevel,
-            timestampFormat: 'YYYY-MM-DD HH:mm:ss.SSS'
-        });
+    if (DEBUG_MODE) {
+        logfile = undefined;
+        loglevel = 'debug';
     }
 
-    return logger;
+    return require('simple-node-logger').createSimpleLogger({
+        logFilePath: logfile,
+        level: loglevel,
+        timestampFormat: 'YYYY-MM-DD HH:mm:ss.SSS'
+    });
 })();
 
 function loginToVehicle() {

@@ -1,4 +1,4 @@
-const teslaCommon = require('./tesla_common');
+const teslaCommon = require('./lib/tesla_common');
 
 var vehicle;
 

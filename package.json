@@ -1,11 +1,11 @@
 {
-  "name": "tesla-app",
-  "version": "0.0.1",
-  "description": "Node script to start the climate on your Tesla",
+  "name": "tesla-funhouse",
+  "version": "0.0.2",
+  "description": "Scripts to automate fun things with your Tesla",
   "author": "Justin Berstler",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "simple-node-logger": "^18.12.22",
-    "teslajs": "^4.2.6"
+    "teslajs": "4.3.3"
   }
 }
